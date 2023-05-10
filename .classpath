@@ -21,7 +21,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/bay_ibm_mq/bay_ibm_mq/002 lib_to_be_use_in_your_IDE/json-simple-1.1.1.jar">
+	<classpathentry kind="lib" path="C:/Users/Phasathon/Downloads/json-simple-1.1.1.jar/json-simple-1.1.1.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
