@@ -21,7 +21,7 @@ public class JmsPub {
 
 	private static int status = 1;
 
-	public static void produce(String msg, Properties prop) {
+	public static void produce(String msg, Properties prop,Logger logger) {
 
 		// Variables
 		JMSContext context = null;
@@ -43,6 +43,7 @@ public class JmsPub {
 			context = cf.createContext();
 			destination = context.createTopic("topic://" + prop.getProperty("mq.topic"));
 
+			logger.log("produce message");
 			TextMessage message = context.createTextMessage(msg);
 
 			setTargetClient(destination);
@@ -54,7 +55,10 @@ public class JmsPub {
 			context.close();
 
 			recordSuccess();
+			
+			logger.log("success");
 		} catch (JMSException jmsex) {
+			logger.log("exception: "+jmsex.getMessage());
 			recordFailure(jmsex);
 		}
 
@@ -64,7 +68,7 @@ public class JmsPub {
 
 	private static JmsConnectionFactory setContext(Properties prop) throws JMSException {
 
-		String host = prop.getProperty("mq.host");
+//		String host = prop.getProperty("mq.host");
 		String connectionNameList = prop.getProperty("mq.hostNameList");
 		int port = Integer.parseInt(prop.getProperty("mq.port"));
 		String channel = prop.getProperty("mq.channel");
@@ -77,8 +81,8 @@ public class JmsPub {
 		JmsConnectionFactory cf = ff.createConnectionFactory();
 
 		// Set the properties
-		cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, host);
-//		cf.setStringProperty(WMQConstants.WMQ_CONNECTION_NAME_LIST, connectionNameList);
+//		cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, host);
+		cf.setStringProperty(WMQConstants.WMQ_CONNECTION_NAME_LIST, connectionNameList);
 		cf.setIntProperty(WMQConstants.WMQ_PORT, port);
 		cf.setStringProperty(WMQConstants.WMQ_CHANNEL, channel);
 		cf.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQConstants.WMQ_CM_CLIENT);

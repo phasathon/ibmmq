@@ -2,7 +2,6 @@ package ibmmq;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,25 +14,26 @@ import java.util.Properties;
 
 public class Message {
 	
+
 	private Message() {
 		throw new IllegalStateException("Utility class");
 	}
 
-	public static void generateMessage() throws SQLException, IOException {
+	public static void generateMessage(Logger logger) throws SQLException, IOException {
 
 		Properties prop = loadProp();
 
-		java.sql.Connection dbConnection = connectDb(prop);
+		java.sql.Connection dbConnection = connectDb(prop,logger);
 		Statement statement = dbConnection.createStatement();
 		ResultSet resultSet = execute(statement, prop);
 
-		JSONArray records = makeResult(resultSet);
+		JSONArray records = makeResult(resultSet,logger);
 
 		closeConnection(resultSet, statement, dbConnection);
 
 		String jsonString = convertJsonToString(records);
 
-		JmsPub.produce(jsonString, prop);
+		JmsPub.produce(jsonString, prop,logger);
 
 	}
 
@@ -49,7 +49,8 @@ public class Message {
 		return statement.executeQuery(sql);
 	}
 
-	private static java.sql.Connection connectDb(Properties prop) throws SQLException {
+	private static java.sql.Connection connectDb(Properties prop,Logger logger) throws SQLException {
+		logger.log("connect db");
 		String dbUrl = prop.getProperty("db.url");
 		String dbUsername = prop.getProperty("db.user");
 		String dbPassword = prop.getProperty("db.password");
@@ -69,7 +70,7 @@ public class Message {
 		return json.toString();
 	}
 
-	private static JSONArray makeResult(ResultSet resultSet) throws SQLException {
+	private static JSONArray makeResult(ResultSet resultSet,Logger logger) throws SQLException {
 
 		int numberJson = 0;
 
@@ -77,7 +78,9 @@ public class Message {
 		String formattedTime = LocalDateTime.now().format(formatter);
 
 		JSONArray records = new JSONArray();
-
+		
+		int count = 0;
+		
 		while (resultSet.next()) {
 
 			String toBank = resultSet.getString("TO_BANK");
@@ -110,8 +113,12 @@ public class Message {
 
 			// Add the record to the records array
 			records.put(recordJson);
+			count++;
 
 		}
+		
+		logger.log("row size :"+count);
+		
 		return records;
 	}
 
