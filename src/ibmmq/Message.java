@@ -32,7 +32,7 @@ public class Message {
 		closeConnection(resultSet, statement, dbConnection);
 
 		String jsonString = convertJsonToString(records);
-
+		logger.log("record: "+jsonString);
 		JmsPub.produce(jsonString, prop,logger);
 
 	}
@@ -97,7 +97,7 @@ public class Message {
 				formattedNumber = Integer.toString(numberJson);
 			}
 
-			String healthy = getHealty(toBank, exceedsTh);
+			boolean healthy = getHealty(toBank, exceedsTh);
 
 			// Create a JSON object for each record
 			JSONObject recordJson = new JSONObject();
@@ -122,8 +122,8 @@ public class Message {
 		return records;
 	}
 
-	private static String getHealty(String toBank, String exceedsTh) {
-		String healthy = "false";
+	private static boolean getHealty(String toBank, String exceedsTh) {
+		boolean healthy = false;
 		List<String> toBankList = new ArrayList<>();
 		toBankList.add("02");
 		toBankList.add("06");
@@ -132,7 +132,7 @@ public class Message {
 		toBankList.add("11");
 		toBankList.add("30");
 		if ("0".equals(exceedsTh) && toBankList.contains(toBank)) {
-			healthy = "true";
+			healthy = true;
 		}
 
 		return healthy;
