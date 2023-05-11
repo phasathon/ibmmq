@@ -1,6 +1,5 @@
 package ibmmq;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.jms.Destination;
@@ -15,14 +14,14 @@ import com.ibm.msg.client.jms.JmsFactoryFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
 
 public class JmsPub {
-	
+
 	private JmsPub() {
 		throw new IllegalStateException("Utility class");
 	}
-	
+
 	private static int status = 1;
 
-	public static void produce(String msg,Properties prop) throws IOException {
+	public static void produce(String msg, Properties prop) {
 
 //		String host = prop.getProperty("mq.host");
 		String connectionNameList = prop.getProperty("mq.hostNameList");
@@ -32,14 +31,16 @@ public class JmsPub {
 		String user = prop.getProperty("mq.username");
 		String password = prop.getProperty("mq.password");
 		String topic = prop.getProperty("mq.topic");
-		
+
 		// Variables
 		JMSContext context = null;
 		Destination destination = null;
 		JMSProducer publisher = null;
-
-		System.setProperty("com.ibm.mq.cfg.useIBMCipherMappings", "false");
 		
+//		System.setProperty("javax.net.ssl.trustStore", "D:\\bay_ibm_mq\\bay_ibm_mq\\certs\\clientkey.jks");
+//		System.setProperty("javax.net.ssl.trustStorePassword", "password");
+		System.setProperty("com.ibm.mq.cfg.useIBMCipherMappings", "false");
+
 		try {
 			// Create a connection factory
 			JmsFactoryFactory ff = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER);
@@ -81,7 +82,6 @@ public class JmsPub {
 
 	} // end main()
 
-	
 	/**
 	 * Record this run as successful.
 	 */

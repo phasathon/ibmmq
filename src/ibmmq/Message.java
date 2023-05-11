@@ -38,7 +38,7 @@ public class Message {
 	}
 
 	private static Properties loadProp() throws IOException {
-		InputStream input = new FileInputStream("./src/resources/application.properties");
+		InputStream input = new FileInputStream("./resources/application.properties");
 		Properties prop = new Properties();
 		prop.load(input);
 		return prop;
