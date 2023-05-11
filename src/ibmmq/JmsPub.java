@@ -23,45 +23,25 @@ public class JmsPub {
 
 	public static void produce(String msg, Properties prop) {
 
-//		String host = prop.getProperty("mq.host");
-		String connectionNameList = prop.getProperty("mq.hostNameList");
-		int port = Integer.parseInt(prop.getProperty("mq.port"));
-		String channel = prop.getProperty("mq.channel");
-		String qmgr = prop.getProperty("mq.qmgr");
-		String user = prop.getProperty("mq.username");
-		String password = prop.getProperty("mq.password");
-		String topic = prop.getProperty("mq.topic");
-
 		// Variables
 		JMSContext context = null;
 		Destination destination = null;
 		JMSProducer publisher = null;
-		
-//		System.setProperty("javax.net.ssl.trustStore", "D:\\bay_ibm_mq\\bay_ibm_mq\\certs\\clientkey.jks");
-//		System.setProperty("javax.net.ssl.trustStorePassword", "password");
+
+		if("true".equals(prop.getProperty("selfTrustStore.enable"))) {
+			System.setProperty("javax.net.ssl.trustStore", prop.getProperty("selfTrustStore.path"));
+			System.setProperty("javax.net.ssl.trustStorePassword", "password");
+		}
+
 		System.setProperty("com.ibm.mq.cfg.useIBMCipherMappings", "false");
 
 		try {
-			// Create a connection factory
-			JmsFactoryFactory ff = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER);
-			JmsConnectionFactory cf = ff.createConnectionFactory();
 
-			// Set the properties
-//			cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, host);
-			cf.setStringProperty(WMQConstants.WMQ_CONNECTION_NAME_LIST,connectionNameList);
-			cf.setIntProperty(WMQConstants.WMQ_PORT, port);
-			cf.setStringProperty(WMQConstants.WMQ_CHANNEL, channel);
-			cf.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQConstants.WMQ_CM_CLIENT);
-			cf.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, qmgr);
-			cf.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "JmsPub (JMS)");
-			cf.setBooleanProperty(WMQConstants.USER_AUTHENTICATION_MQCSP, true);
-			cf.setStringProperty(WMQConstants.USERID, user);
-			cf.setStringProperty(WMQConstants.PASSWORD, password);
-			cf.setStringProperty(WMQConstants.WMQ_SSL_CIPHER_SUITE, "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384");
+			JmsConnectionFactory cf = setContext(prop);
 
 			// Create JMS objects
 			context = cf.createContext();
-			destination = context.createTopic("topic://" + topic);
+			destination = context.createTopic("topic://" + prop.getProperty("mq.topic"));
 
 			TextMessage message = context.createTextMessage(msg);
 
@@ -81,6 +61,36 @@ public class JmsPub {
 		System.exit(status);
 
 	} // end main()
+
+	private static JmsConnectionFactory setContext(Properties prop) throws JMSException {
+
+		String host = prop.getProperty("mq.host");
+		String connectionNameList = prop.getProperty("mq.hostNameList");
+		int port = Integer.parseInt(prop.getProperty("mq.port"));
+		String channel = prop.getProperty("mq.channel");
+		String qmgr = prop.getProperty("mq.qmgr");
+		String user = prop.getProperty("mq.username");
+		String password = prop.getProperty("mq.password");
+
+		// Create a connection factory
+		JmsFactoryFactory ff = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER);
+		JmsConnectionFactory cf = ff.createConnectionFactory();
+
+		// Set the properties
+		cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, host);
+//		cf.setStringProperty(WMQConstants.WMQ_CONNECTION_NAME_LIST, connectionNameList);
+		cf.setIntProperty(WMQConstants.WMQ_PORT, port);
+		cf.setStringProperty(WMQConstants.WMQ_CHANNEL, channel);
+		cf.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQConstants.WMQ_CM_CLIENT);
+		cf.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, qmgr);
+		cf.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "JmsPub (JMS)");
+		cf.setBooleanProperty(WMQConstants.USER_AUTHENTICATION_MQCSP, true);
+		cf.setStringProperty(WMQConstants.USERID, user);
+		cf.setStringProperty(WMQConstants.PASSWORD, password);
+		cf.setStringProperty(WMQConstants.WMQ_SSL_CIPHER_SUITE, "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384");
+
+		return cf;
+	}
 
 	/**
 	 * Record this run as successful.
