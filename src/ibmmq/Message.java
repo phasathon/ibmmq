@@ -103,7 +103,7 @@ public class Message {
 			JSONObject recordJson = new JSONObject();
 			recordJson.put("id", formattedNumber);
 			JSONObject fields = new JSONObject();
-			fields.put("bankId", toBank);
+			fields.put("bankId", "0"+toBank);
 			fields.put("bankCode", toBankDesc);
 			fields.put("isHealthy", healthy);
 			fields.put("eventDateTime", formattedTime + "+07:00");

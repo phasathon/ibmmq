@@ -10,6 +10,7 @@ import javax.jms.TextMessage;
 
 import com.ibm.mq.jms.MQDestination;
 import com.ibm.msg.client.jms.JmsConnectionFactory;
+import com.ibm.msg.client.jms.JmsConstants;
 import com.ibm.msg.client.jms.JmsFactoryFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
 
@@ -42,9 +43,10 @@ public class JmsPub {
 			// Create JMS objects
 			context = cf.createContext();
 			destination = context.createTopic("topic://" + prop.getProperty("mq.topic"));
-
+			
 			logger.log("produce message");
 			TextMessage message = context.createTextMessage(msg);
+			message.setIntProperty(JmsConstants.JMS_IBM_RETAIN, JmsConstants.RETAIN_PUBLICATION);
 
 			setTargetClient(destination);
 
@@ -92,7 +94,7 @@ public class JmsPub {
 		cf.setStringProperty(WMQConstants.USERID, user);
 		cf.setStringProperty(WMQConstants.PASSWORD, password);
 		cf.setStringProperty(WMQConstants.WMQ_SSL_CIPHER_SUITE, "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384");
-
+		cf.setIntProperty(JmsConstants.JMS_IBM_RETAIN, JmsConstants.RETAIN_PUBLICATION);
 		return cf;
 	}
 
