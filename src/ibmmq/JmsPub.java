@@ -94,7 +94,6 @@ public class JmsPub {
 		cf.setStringProperty(WMQConstants.USERID, user);
 		cf.setStringProperty(WMQConstants.PASSWORD, password);
 		cf.setStringProperty(WMQConstants.WMQ_SSL_CIPHER_SUITE, "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384");
-		cf.setIntProperty(JmsConstants.JMS_IBM_RETAIN, JmsConstants.RETAIN_PUBLICATION);
 		return cf;
 	}
 
